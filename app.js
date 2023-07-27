@@ -26,23 +26,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(extractJwt);
 
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
+// app.get('/crash-test', () => {
+//   setTimeout(() => {
+//     throw new Error('Сервер сейчас упадёт');
+//   }, 0);
+// });
 
 app.use(requestLogger);
 
 app.use(cors({
   origin: [
-    'https://aradion0va.nomoredomains.work',
-    'http://aradion0va.nomoredomains.work',
+    'https://aradion0va.nomoreparties.sbs',
+    'http://aradion0va.nomoreparties.sbs',
     'http://localhost:3000',
   ],
   credentials: true,
-  methods: 'GET, PUT, PATCH, POST, DELETE',
-  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
 }));
 
 app.post('/signin', validationLogin, login);

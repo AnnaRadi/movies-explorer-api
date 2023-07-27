@@ -5,7 +5,7 @@ const logout = require('./logout');
 const NotFoundDocumentError = require('../errs/NotFoundDocumentError');
 
 router.use('/users', userRoutes);
-router.use('/movie', movieRoutes);
+router.use('/movies', movieRoutes);
 router.use('/logout', logout);
 
 router.use('*', NotFoundDocumentError);

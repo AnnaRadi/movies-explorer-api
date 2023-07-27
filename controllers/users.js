@@ -27,24 +27,18 @@ const getUser = (req, res, next) => {
 
 const createUser = (req, res, next) => {
   const { name, email, password } = req.body;
-
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      name,
-      email,
-      password: hash,
+      name, email, password: hash,
     }))
     .then((({ id }) => User.findById(id)))
     .then((user) => res.send(user))
-    .then((us) => {
-      res.send(formatUser(us));
-    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Неверно'));
+        throw new BadRequestError('Неверно');
       }
       if (err.code === 11000) {
-        throw new ConflictError('Пользователь с таким email уже существует');
+        throw new ConflictError('Пользователь существует');
       }
       next(err);
     })
