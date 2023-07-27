@@ -8,8 +8,7 @@ const BadRequestError = require('../errs/BadRequestError');
 const ConflictError = require('../errs/ConflictError');
 
 const getUser = (req, res, next) => {
-  const { userId } = req.params;
-  User.findById(userId)
+  User.findById({ _id: req.user._id })
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Не найдено');
