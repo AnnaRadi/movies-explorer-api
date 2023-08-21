@@ -30,25 +30,32 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, email, password: hash,
     }))
-    .then((({ id }) => User.findById(id)))
-    .then((user) => res.send(user))
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, `${NODE_ENV === 'production' ? JWT_SECRET : 'yandex-praktikum'}`, { expiresIn: '7d' });
+      res.cookie('jwt', token, {
+        maxAge: 60 * 60 * 1000 * 24 * 7,
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+      });
+      res.status(200).json({ _id: user._id, email, name });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Неверно');
+        next(new BadRequestError('Неверно'));
+      } else if (err.code === 11000) {
+        next(new ConflictError('Пользователь существует'));
+      } else {
+        next(err);
       }
-      if (err.code === 11000) {
-        throw new ConflictError('Пользователь существует');
-      }
-      next(err);
-    })
-    .catch(next);
+    });
 };
 
 const updateUser = (req, res, next) => {
-  const { name, about } = req.body;
+  const { name, email } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    { name, about },
+    { name, email },
     { new: true, runValidators: true },
   )
     .then((user) => {
@@ -84,8 +91,12 @@ const login = (req, res, next) => {
 };
 
 const logout = (req, res) => {
-  res.clearCookie('jwt');
-  res.json({ message: 'Вы успешно вышли' });
+  res.clearCookie('jwt', {
+    httpOnly: true,
+    sameSite: 'none',
+    secure: true,
+  });
+  res.json({ message: 'Вы вышли' });
 };
 
 module.exports = {
