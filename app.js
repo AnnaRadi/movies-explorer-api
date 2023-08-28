@@ -26,6 +26,7 @@ app.use(cors({
     'https://aradion0va.nomoreparties.sbs',
     'http://aradion0va.nomoreparties.sbs',
     'http://localhost:3000',
+    'http://localhost:4000',
   ],
   credentials: true,
 }));
